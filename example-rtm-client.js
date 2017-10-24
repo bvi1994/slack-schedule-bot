@@ -23,8 +23,9 @@ rtm.on(RTM_EVENTS.MESSAGE, function handleRtmMessage(message) {
     console.log("Message sent by a bot. Ignoring.")
     return;
   }
-  web.chat.postMessage(message.channel,
-    `Hello. I'm your appointment bot. Please give me access to your Google calander at http://localhost:3000/setup?slackId=${message.user}`)
+  web.chat.postMessage(message.channel,{
+    text: `Hello. I'm your appointment bot. Please give me access to your Google calander at http://localhost:3000/setup?slackId=${message.user}`)  
+  });
 });
 
 // rtm.on(RTM_EVENTS.REACTION_ADDED, function handleRtmReactionAdded(reaction) {
