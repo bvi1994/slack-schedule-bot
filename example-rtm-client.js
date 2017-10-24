@@ -19,8 +19,7 @@ function handleDialogflowConvo(message){
     if(data.result.actionIncomplete){
       web.chat.postMessage(message.channel, data.result.fulfillment.speech);
     } else {
-      web.chat.postMessage(message.channel,
-        `You asked me to remind you to ${data.result.parameters.description} on ${data.result.parameters.date}`);
+      postInteractiveMessage(message,data);
     }
   })
   .catch(function(err){
@@ -29,44 +28,30 @@ function handleDialogflowConvo(message){
 };
 
 
-function postInteractiveMessage(message, attachments){
-  web.chat.postMessage(message.channel, "Would you like to play a game?", { "attachments":
-  [
-        {
-            "text": "Choose a game to play",
-            "fallback": "You are unable to choose a game",
-            "callback_id": "wopr_game",
-            "color": "#3AA3E3",
-            "attachment_type": "default",
-            "actions": [
-                {
-                    "name": "game",
-                    "text": "Chess",
-                    "type": "button",
-                    "value": "chess"
-                },
-                {
-                    "name": "game",
-                    "text": "Falken's Maze",
-                    "type": "button",
-                    "value": "maze"
-                },
-                {
-                    "name": "game",
-                    "text": "Thermonuclear War",
-                    "style": "danger",
-                    "type": "button",
-                    "value": "war",
-                    "confirm": {
-                        "title": "Are you sure?",
-                        "text": "Wouldn't you prefer a good game of chess?",
-                        "ok_text": "Yes",
-                        "dismiss_text": "No"
-                    }
-                }
-            ]
-        }
-    ] }
+function postInteractiveMessage(message, data){
+  var text = `Confirm reminder to ${data.result.parameters.description} on ${data.result.parameters.date}`;
+  web.chat.postMessage(message.channel, text, { "attachments":[
+      {
+          "fallback": "Error setting reminder",
+          "callback_id": "wopr_game",
+          "color": "#3AA3E3",
+          "attachment_type": "default",
+          "actions": [
+              {
+                  "name": "yes",
+                  "text": "Yes",
+                  "type": "button",
+                  "value": "yes"
+              },
+              {
+                  "name": "no",
+                  "text": "No",
+                  "type": "button",
+                  "value": "no"
+              }
+          ]
+      }
+    ]}
   );
 };
 
