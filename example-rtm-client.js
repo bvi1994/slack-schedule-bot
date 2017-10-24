@@ -1,15 +1,19 @@
-var { WebClient, RtmClient, RTM_EVENTS } = require('@slack/client')
-const { createMessageAdapter } = require('@slack/interactive-messages');
-var dialogflow = require('./dialogflow');
+/**
+ * Example for creating and working with the Slack RTM API.
+ */
+
+/* eslint no-console:0 */
+
+var {WebClient, RtmClient, RTM_EVENTS} = require('@slack/client')
+// var RtmClient = require('@slack/client').RtmClient;
+// var RTM_EVENTS = require('@slack/client').RTM_EVENTS;
+
 var token = process.env.SLACK_API_TOKEN || '';
 
 var web = new WebClient(token);
 var rtm = new RtmClient(token);
-const slackMessages = createMessageAdapter(process.env.SLACK_VERIFICATION_TOKEN);
+// var rtm = new RtmClient(token, { logLevel: 'debug' });
 rtm.start();
-
-
-
 
 function handleDialogflowConvo(message){
   dialogflow.interpretUserMessage(message.text,message.user)
