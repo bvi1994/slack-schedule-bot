@@ -3,8 +3,9 @@ var app = express();
 
 require('./example-rtm-client');
 
-// app.get('/', function(req, res) {
-//   res.send('Your server is working!');
-// });
+app.post('/interactive', function(req, res) {
+  console.log(req);
+  res.send('Your server is working!');
+});
 
 app.listen(3000);
