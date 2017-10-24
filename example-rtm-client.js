@@ -1,19 +1,15 @@
-/**
- * Example for creating and working with the Slack RTM API.
- */
-
-/* eslint no-console:0 */
-
-var {WebClient, RtmClient, RTM_EVENTS} = require('@slack/client')
-// var RtmClient = require('@slack/client').RtmClient;
-// var RTM_EVENTS = require('@slack/client').RTM_EVENTS;
-
+var { WebClient, RtmClient, RTM_EVENTS } = require('@slack/client')
+const { createMessageAdapter } = require('@slack/interactive-messages');
+var dialogflow = require('./dialogflow');
 var token = process.env.SLACK_API_TOKEN || '';
 
 var web = new WebClient(token);
 var rtm = new RtmClient(token);
-// var rtm = new RtmClient(token, { logLevel: 'debug' });
+const slackMessages = createMessageAdapter(process.env.SLACK_VERIFICATION_TOKEN);
 rtm.start();
+
+
+
 
 function handleDialogflowConvo(message){
   dialogflow.interpretUserMessage(message.text,message.user)
@@ -32,32 +28,32 @@ function handleDialogflowConvo(message){
 };
 
 
-function postInteractiveMessage(message, data){
-  var text = `Confirm reminder to ${data.result.parameters.description} on ${data.result.parameters.date}`;
-  web.chat.postMessage(message.channel, text, { "attachments":[
-      {
-          "fallback": "Error setting reminder",
-          "callback_id": "wopr_game",
-          "color": "#3AA3E3",
-          "attachment_type": "default",
-          "actions": [
-              {
-                  "name": "yes",
-                  "text": "Yes",
-                  "type": "button",
-                  "value": "yes"
-              },
-              {
-                  "name": "no",
-                  "text": "No",
-                  "type": "button",
-                  "value": "no"
-              }
-          ]
-      }
-    ]}
-  );
-};
+// function postInteractiveMessage(message, data){
+//   var text = `Confirm reminder to ${data.result.parameters.description} on ${data.result.parameters.date}`;
+//   web.chat.postMessage(message.channel, text, { "attachments":[
+//       {
+//           "fallback": "Error setting reminder",
+//           "callback_id": "wopr_game",
+//           "color": "#3AA3E3",
+//           "attachment_type": "default",
+//           "actions": [
+//               {
+//                   "name": "yes",
+//                   "text": "Yes",
+//                   "type": "button",
+//                   "value": "yes"
+//               },
+//               {
+//                   "name": "no",
+//                   "text": "No",
+//                   "type": "button",
+//                   "value": "no"
+//               }
+//           ]
+//       }
+//     ]}
+//   );
+// };
 
 rtm.on(RTM_EVENTS.MESSAGE, function handleRtmMessage(message) {
   if(!message.user){
@@ -66,8 +62,11 @@ rtm.on(RTM_EVENTS.MESSAGE, function handleRtmMessage(message) {
     console.log("Message sent by a bot.")
     return;
   }
-  handleDialogflowConvo(message);
-    // `Hello. I'm your appointment bot. Please give me access to your Google calander at http://localhost:3000/setup?slackId=${message.user}`)
+  // handleDialogflowConvo(message);
+  // console.log(rtm.dataStore.getUserById(message.user.User.id));
+  web.chat.postMessage(message.channel, `Hey. I'm a scheduler bot. I need permission to access your calander application. Please give me permission to hack to your Google Calander. http://localhost:3000/setup`);
+  return
+  // `Hello. I'm your appointment bot. Please give me access to your Google calander at http://localhost:3000/setup?slackId=${message.user}`)
 });
 
 // rtm.on(RTM_EVENTS.REACTION_ADDED, function handleRtmReactionAdded(reaction) {
