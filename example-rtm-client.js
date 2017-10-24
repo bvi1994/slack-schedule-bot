@@ -59,7 +59,7 @@ rtm.on(RTM_EVENTS.MESSAGE, function handleRtmMessage(message) {
   if(!message.user){
     // web.chat.postMessage(message.channel, `You said: ${message.text}`);
     // console.log('Pong!');
-    console.log("Message sent by a bot.")
+    //console.log("Message sent by a bot.")
     return;
   }
   handleDialogflowConvo(message);
@@ -67,8 +67,9 @@ rtm.on(RTM_EVENTS.MESSAGE, function handleRtmMessage(message) {
 });
 
 // rtm.on(RTM_EVENTS.REACTION_ADDED, function handleRtmReactionAdded(reaction) {
-//   console.log('Reaction added:', reaction);
+//    console.log('Reaction added:', reaction);
 // });
+
 //
 // rtm.on(RTM_EVENTS.REACTION_REMOVED, function handleRtmReactionRemoved(reaction) {
 //   console.log('Reaction removed:', reaction);
