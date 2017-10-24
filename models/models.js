@@ -1,16 +1,14 @@
 var mongoose = require('mongoose');
 mongoose.connect(process.env.MONGODB_URI);
 
-var Schema = mongoose.Schema();
 
-var User = new Schema({
-    google: Object,
-    pending: {
-        subject: String,
-        date: Date
+var UserSchema = new mongoose.Schema({
+    Google: Object,
+    Pending: {
+        type: Object,
+        default: null
     },
+    Name: String
 })
 
-modules.export = {
-    User
-};
+module.exports =  mongoose.model('User', UserSchema);
