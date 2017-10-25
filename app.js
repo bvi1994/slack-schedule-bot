@@ -28,6 +28,7 @@ app.post('/interactive', function(req, res) {
         return;
     }
     message = "Reminder added.";
+    google.checkTokens(user);
     return google.createCalendarEvent(user.Google.tokens, user.Pending.Subject, user.Pending.Date)
   })
   .then(function(){
