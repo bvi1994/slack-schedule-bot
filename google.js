@@ -16,12 +16,12 @@ function getAuthClient() {
 }
 
 module.exports = {
-  generateAuthUrl() {
+  generateAuthUrl(Name) {
     return getAuthClient().generateAuthUrl({
       access_type: 'offline',
       prompt: 'consent',
-      scope
-      // state: 'foo'
+      scope,
+      state: Name
     });
   },
 

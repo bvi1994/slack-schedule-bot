@@ -2,7 +2,7 @@ var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
 
-var User = require('./models/models');
+var { User } = require('./models/models');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -11,50 +11,57 @@ require('./example-rtm-client');
 var google = require('./google');
 
 app.post('/interactive', function(req, res) {
-  var resp = JSON.parse(req.body.payload)
-  console.log(resp);
+  console.log(req.body.payload);
+  var resp = JSON.parse(req.body.payload);
+  var saveEvent = resp.actions[0].value === 'yes';
+  var message;
   User.findOne({Name: resp.user.id})
   .then(function(user){
-    if(resp.actions[0].value === 'yes'){
-      if(!user.Google){
-        res.send(`Hey. I'm a scheduler bot. I need permission to access your calander application. Please give me permission to hack to your Google Calander. http://localhost:3000/setup`);
-      }
-      else {
-        user.Pending = null;
-        user.save()
-        .then(function(){
-          res.send('Reminder added')
-        })
-        .catch(function(err){
-          res.send("Error saving user:" + err);
-        });
-      }
+    console.log('User:',user);
+    if(saveEvent && !user.Google.isSetupComplete){
+        message = `Hey. I'm a scheduler bot. I need permission to access your calendar application. Please give me permission to hack to your Google Calander. http://localhost:3000/setup?Name=${user.Name}`;
+        return;
     }
-    else{
-      user.Pending = null;
-      user.save()
-      .then(function(){
-        res.send('Reminder not added')
-      })
-      .catch(function(err){
-        res.send("Error saving user:" + err);
-      });
-      // res.send('Reminder not added');
-    }
+    message = saveEvent ? "Reminder added." : "Reminder not added";
+    user.Pending = null;
+    return user.save();
+  })
+  .then(function(){
+    console.log('User saved.');
+    console.log('Message');
+    res.send(message);
   })
   .catch(function(err){
-    res.send('Error finding user:' + err);
+    res.send('Error:' + err);
   });
 });
 
 app.get('/setup', function(req, res){
-  var url = google.generateAuthUrl();
+  var url = google.generateAuthUrl(req.query.Name);
   res.redirect(url);
   // console.log(url);
 });
 
 app.get('/google/callback', function(req, res){
-  res.send("We now have access to your Google Calander!");
-})
+  var user;
+  var tokens;
+  User.findOne({ Name : req.query.state })
+    .then(function(u) {
+      user = u;
+      return google.getToken(req.query.code)
+    })
+    .then(function(t){
+      tokens = t;
+      user.Google.tokens = tokens;
+      user.Google.isSetupComplete = true;
+      return user.save();
+    })
+    .then(function(){
+      res.send('Google authentication successful.');
+    })
+    .catch(function(err){
+      console.log('Error:',err);
+    });
+});
 
 app.listen(3000);

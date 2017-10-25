@@ -1,17 +1,42 @@
 var mongoose = require('mongoose');
 mongoose.connect(process.env.MONGODB_URI);
-
+mongoose.Promise = global.Promise;
 
 var UserSchema = new mongoose.Schema({
     Google: {
       type: Object,
-      default: null
+      default: {
+        isSetupComplete: false,
+        tokens: null
+      }
     },
     Pending: {
         type: Object,
         default: null
     },
-    Name: String
-})
+    Name: {
+      type: String,
+      required: true
+    }
+});
 
-module.exports =  mongoose.model('User', UserSchema);
+UserSchema.statics.findOrCreate = function(Name) {
+  return User.findOne({ Name })
+    .then(function(user) {
+      if(user) {
+        return user;
+      }
+      else {
+        return new User({ Name }).save();
+      }
+    })
+    .catch(function(err){
+      console.log('Error:',err);
+    })
+};
+
+var User =  mongoose.model('User', UserSchema);
+
+module.exports = {
+  User
+};
