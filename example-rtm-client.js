@@ -2,7 +2,7 @@ var { WebClient, RtmClient, RTM_EVENTS } = require('@slack/client')
 const { createMessageAdapter } = require('@slack/interactive-messages');
 var dialogflow = require('./dialogflow');
 var token = process.env.SLACK_API_TOKEN || '';
-var User = require('./models/models');
+var { User } = require('./models/models');
 var mongoose = require('mongoose');
 mongoose.connect(process.env.MONGODB_URI);
 
@@ -13,34 +13,38 @@ rtm.start();
 
 
 function handleDialogflowConvo(message){
+  var data;
   dialogflow.interpretUserMessage(message.text, message.user)
   .then(function(res){
-    var { data } = res;
-    console.log('DIALOGFLOW RESPONSE:',res.data);
+    data = res.data;
+    //console.log('DIALOGFLOW RESPONSE:',data);
     if(data.result.actionIncomplete){
       web.chat.postMessage(message.channel, data.result.fulfillment.speech);
-    } else {
-        User.findOne({Name: message.user}, function(err, user){
-            user.Pending = Object.assign({}, {Subject: data.result.parameters.description, Date: data.result.parameters.date} );
-            user.save(function(err){
-                if (err){
-                console.log("error saving pending reminder", err);}
-            })
-        })
-      .then(postInteractiveMessage(message, data.result.parameters.description, data.result.parameters.date))
-      .catch(function(err){
-          console.log("error", err)
-      })
+    }
+    else{
+      return User.findOne({Name: message.user});
+    }
+  })
+  .then(function(user){
+    if(user) {
+      user.Pending = Object.assign({}, {Subject: data.result.parameters.description, Date: data.result.parameters.date});
+      return user.save();
+    }
+  })
+  .then(function(user){
+    if(user){
+      postInteractiveMessage(message, user.Pending.Subject, user.Pending.Date);
     }
   })
   .catch(function(err){
-    console.log('Error sending message to Diagflow',err);
+    console.log('Error:',err);
   });
 };
 
 
-function postInteractiveMessage(message, desc, date){
-  var text = `Confirm reminder to ${desc} on ${date}`;
+function postInteractiveMessage(message, desc, date, pendingErr){
+  var text = pendingErr ? 'If you want to make a new reminder, please cancel pending reminder\n' : '';
+  text += `Confirm reminder to ${desc} on ${date}`;
 
   web.chat.postMessage(message.channel, text, { "attachments":[
       {
@@ -69,30 +73,19 @@ function postInteractiveMessage(message, desc, date){
 
 rtm.on(RTM_EVENTS.MESSAGE, function handleRtmMessage(message) {
   if(!message.user){
-    // web.chat.postMessage(message.channel, `You said: ${message.text}`);
-    // console.log('Pong!');
-    //console.log("Message sent by a bot.")
     return;
   }
-  User.findOne({Name: message.user}, function(err, result){
-      if (result && result.Pending){
-          web.chat.postMessage(message.channel, 'If you want to make a new reminder, please cancel pending reminder');
-          postInteractiveMessage(message, result.Pending.Subject, result.Pending.Date);
+  User.findOrCreate(message.user)
+  .then(function(user){
+      if (user.Pending){
+          postInteractiveMessage(message, user.Pending.Subject, user.Pending.Date, true);
           return;
-      }
-      if (!result){
-          var newUser = new User({
-              Name: message.user
-          })
-          newUser.save(function(err){
-              console.log('Error saving to DB: ', err)
-              console.log(message.user)
-          })
       }
       handleDialogflowConvo(message);
   })
-
-    // `Hello. I'm your appointment bot. Please give me access to your Google calander at http://localhost:3000/setup?slackId=${message.user}`)
+  .catch(function(err){
+      console.log('Error:',err);
+  });
 });
 
 // rtm.on(RTM_EVENTS.REACTION_ADDED, function handleRtmReactionAdded(reaction) {
