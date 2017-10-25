@@ -38,6 +38,29 @@ module.exports = {
     });
   },
 
+  checkTokens(user){
+    // console.log('Checktokens is running')
+    if(Date.now() > user.Google.tokens.expiry_date){
+      var client = getAuthClient();
+      client.setCredentials(user.Google.tokens);
+      client.refreshAccessToken(function(err, tokens) {
+        if(err){
+          console.log(err)
+          return err + ' Unable to update token'
+        }
+        console.log("Updating user's token");
+        user.Google.tokens = tokens;
+        return user.save();
+      })
+    }
+
+    console.log("Look here: " + user.Google.tokens.expiry_date);
+    return new Promise(function(resolve, reject){
+      resolve(user);
+    });
+  },
+
+
   createCalendarEvent(tokens, title, date) {
     var client = getAuthClient();
     client.setCredentials(tokens);
