@@ -34,6 +34,7 @@ function handleDialogflowConvo(message){
   .then(function(user){
     if(user){
       postInteractiveMessage(message, user.Pending.Subject, user.Pending.Date);
+      //postInteractiveMessage(message, user.Pending, data.result.metadata.intentName)
     }
   })
   .catch(function(err){
