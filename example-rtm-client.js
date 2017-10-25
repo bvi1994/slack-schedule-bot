@@ -17,7 +17,7 @@ function handleDialogflowConvo(message){
   dialogflow.interpretUserMessage(message.text, message.user)
   .then(function(res){
     data = res.data;
-    //console.log('DIALOGFLOW RESPONSE:',data);
+    // if data.result.metadata.intentName === 'reminder.add';
     if(data.result.actionIncomplete){
       web.chat.postMessage(message.channel, data.result.fulfillment.speech);
     }
@@ -27,7 +27,7 @@ function handleDialogflowConvo(message){
   })
   .then(function(user){
     if(user) {
-      user.Pending = Object.assign({}, {Subject: data.result.parameters.description, Date: data.result.parameters.date});
+      user.Pending = Object.assign({}, data.result.parameters);
       return user.save();
     }
   })

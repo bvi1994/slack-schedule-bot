@@ -37,6 +37,40 @@ UserSchema.statics.findOrCreate = function(Name) {
 
 var User =  mongoose.model('User', UserSchema);
 
+var ReminderSchema = new mongoose.Schema({
+    Subject:  {
+        type: String,
+        require: true
+    },
+    Date: {
+        type: Date,
+        required: true
+    },
+    Name: {
+      type: String,
+      required: true
+    }
+});
+
+ReminderSchema.statics.findUpcoming = function() {
+  var today = new Date();
+  today.setHours(0,0,0,0);
+  var tomorrow = new Date();
+  tomorrow.setDate(today.getDate()+1);
+  tomorrow.setHours(0,0,0,0);
+  console.log("Today:",today);
+  console.log("Tomorrow:",tomorrow);
+  return Reminder.find({
+    $or: [ { Date: today }, { Date: tomorrow }]
+  })
+  .catch(function(err){
+    console.log('Error:',err);
+  })
+};
+
+var Reminder = mongoose.model('Reminder', ReminderSchema);
+
 module.exports = {
-  User
+  User,
+  Reminder
 };
