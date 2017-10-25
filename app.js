@@ -11,7 +11,6 @@ require('./example-rtm-client');
 var google = require('./google');
 
 app.post('/interactive', function(req, res) {
-  console.log(req.body.payload);
   var resp = JSON.parse(req.body.payload);
   var saveEvent = resp.actions[0].value === 'yes';
   var message;
@@ -56,7 +55,7 @@ app.get('/google/callback', function(req, res){
   User.findOne({ Name : req.query.state })
     .then(function(u) {
       user = u;
-      return google.getToken(req.query.code)
+      return google.getToken(req.query.code);
     })
     .then(function(t){
       tokens = t;
