@@ -17,7 +17,7 @@ app.post('/interactive', function(req, res) {
   User.findOne({Name: resp.user.id})
   .then(function(user){
     if(saveEvent && !user.Google.isSetupComplete){
-        message = `Hey. I'm a scheduler bot. I need permission to access your calendar application. Please give me permission to hack to your Google Calendar. http://localhost:3000/setup?Name=${user.Name}`;
+        message = `Hey. I'm a scheduler bot. I need permission to access your calendar application. Please give me permission to hack to your Google Calender. http://localhost:3000/setup?Name=${user.Name}`;
         return;
     }
     message = saveEvent ? "Reminder added." : "Reminder not added";
@@ -48,8 +48,9 @@ app.get('/google/callback', function(req, res){
     })
     .then(function(t){
       tokens = t;
-      user.Google.tokens = tokens;
+      user.Google.tokens = Object.assign({}, tokens);
       user.Google.isSetupComplete = true;
+      console.log(user.Google);
       return user.save();
     })
     .then(function(){

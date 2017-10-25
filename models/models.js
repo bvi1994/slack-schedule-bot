@@ -3,15 +3,12 @@ mongoose.connect(process.env.MONGODB_URI);
 mongoose.Promise = global.Promise;
 
 var UserSchema = new mongoose.Schema({
-    Google: {
-      isSetupComplete: {
-        type: Boolean,
-        default: false
-      },
-      tokens: {
-        type: Object,
-        default: null
-      }
+    Google:  {
+        isSetupComplete: {
+            type: Boolean,
+            default: false
+        },
+        tokens: Object
     },
     Pending: {
         type: Object,
