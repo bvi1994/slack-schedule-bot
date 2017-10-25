@@ -11,15 +11,13 @@ require('./example-rtm-client');
 var google = require('./google');
 
 app.post('/interactive', function(req, res) {
-  console.log(req.body.payload);
   var resp = JSON.parse(req.body.payload);
   var saveEvent = resp.actions[0].value === 'yes';
   var message;
   User.findOne({Name: resp.user.id})
   .then(function(user){
-    console.log('User:',user);
     if(saveEvent && !user.Google.isSetupComplete){
-        message = `Hey. I'm a scheduler bot. I need permission to access your calendar application. Please give me permission to hack to your Google Calander. http://localhost:3000/setup?Name=${user.Name}`;
+        message = `Hey. I'm a scheduler bot. I need permission to access your calendar application. Please give me permission to hack to your Google Calendar. http://localhost:3000/setup?Name=${user.Name}`;
         return;
     }
     message = saveEvent ? "Reminder added." : "Reminder not added";
@@ -27,8 +25,6 @@ app.post('/interactive', function(req, res) {
     return user.save();
   })
   .then(function(){
-    console.log('User saved.');
-    console.log('Message');
     res.send(message);
   })
   .catch(function(err){
@@ -48,7 +44,7 @@ app.get('/google/callback', function(req, res){
   User.findOne({ Name : req.query.state })
     .then(function(u) {
       user = u;
-      return google.getToken(req.query.code)
+      return google.getToken(req.query.code);
     })
     .then(function(t){
       tokens = t;

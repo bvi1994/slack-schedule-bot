@@ -4,10 +4,13 @@ mongoose.Promise = global.Promise;
 
 var UserSchema = new mongoose.Schema({
     Google: {
-      type: Object,
-      default: {
-        isSetupComplete: false,
-        tokens: null
+      isSetupComplete: {
+        type: Boolean,
+        default: false
+      },
+      tokens: {
+        type: Object,
+        default: null
       }
     },
     Pending: {
