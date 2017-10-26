@@ -50,7 +50,7 @@ var ReminderSchema = new mongoose.Schema({
         type: Date,
         required: true
     },
-    Name: {
+    Channel: {
       type: String,
       required: true
     }
