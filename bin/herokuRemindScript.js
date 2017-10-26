@@ -1,5 +1,5 @@
 var { Reminder } = require('../models/models');
-var { sendReminder } = require('./sendReminder');
+var { sendReminder } = require('../reminders/sendReminder');
 
 Reminder.findUpcoming()
 .then(function(reminders){
