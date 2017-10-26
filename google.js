@@ -73,8 +73,8 @@ module.exports = {
         newTime = newTime.join(':');
     }
     var resourceObj = pendingObj.Invitees ?
-      {summary: 'meeting',
-       description: `with ${pendingObj.Invitees.map((invitee) => invitee).join()}`,
+      {summary: `meeting with ${pendingObj.Invitees.map((invitee) => invitee).join()}`,
+       description: pendingObj.Subject ? `re: ${pendingObj.Subject}` : null,
        location: pendingObj.Location || null,
        start: { dateTime: `${pendingObj['Date']}T${pendingObj.Time}`, 'timeZone': 'America/Los_Angeles' },
        end: { dateTime: `${pendingObj['Date']}T${newTime}`, 'timeZone': 'America/Los_Angeles' }
