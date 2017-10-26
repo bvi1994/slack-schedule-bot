@@ -7,5 +7,5 @@ var scope = [
 ];
 
 module.exports = {
-    
+
 }

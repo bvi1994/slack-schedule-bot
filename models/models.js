@@ -17,17 +17,21 @@ var UserSchema = new mongoose.Schema({
     Name: {
       type: String,
       required: true
+    },
+    Channel: {
+      type: String,
+      required: true
     }
 });
 
-UserSchema.statics.findOrCreate = function(Name) {
+UserSchema.statics.findOrCreate = function(Name, Channel) {
   return User.findOne({ Name })
     .then(function(user) {
       if(user) {
         return user;
       }
       else {
-        return new User({ Name }).save();
+        return new User({ Name, Channel }).save();
       }
     })
     .catch(function(err){
@@ -46,7 +50,7 @@ var ReminderSchema = new mongoose.Schema({
         type: Date,
         required: true
     },
-    Name: {
+    Channel: {
       type: String,
       required: true
     }
