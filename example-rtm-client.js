@@ -14,26 +14,35 @@ rtm.start();
 
 function handleDialogflowConvo(message){
   var data;
+  var done = false;
   dialogflow.interpretUserMessage(message.text, message.user)
   .then(function(res){
     data = res.data;
     if(data.result.actionIncomplete || data.result.metadata.intentName === "Default Fallback Intent"){
-      web.chat.postMessage(message.channel, data.result.fulfillment.speech);
+      return web.chat.postMessage(message.channel, data.result.fulfillment.speech);
     }
-    else{
+    else {
+      done = true;
       return User.findOne({Name: message.user});
     }
   })
   .then(function(user){
-    if(user) {
+    if(done) {
       user.Pending = Object.assign({}, data.result.parameters);
       return user.save();
-    }
+  } else {
+      return;
+  }
   })
   .then(function(user){
-    if(user){
-      postInteractiveMessage(message, user.Pending, data.result.metadata.intentName);
-    }
+    if(done){
+      return postInteractiveMessage(message, user.Pending, data.result.metadata.intentName);
+  } else {
+      return;
+  }
+  })
+  .then(function(){
+      console.log('got through async post')
   })
   .catch(function(err){
     console.log('Error:',err);
@@ -45,7 +54,7 @@ function postInteractiveMessage(message, pending, intent, pendingErr){
   var text = pendingErr ? 'If you want to make a new reminder, please cancel pending reminder\n' : '';
   text += makeSentence(pending);
 
-  web.chat.postMessage(message.channel, text, { "attachments":[
+  return web.chat.postMessage(message.channel, text, { "attachments":[
       {
           "fallback": "Error setting reminder",
           "callback_id": message.channel,
