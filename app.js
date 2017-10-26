@@ -1,7 +1,7 @@
 var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
-
+var { createReminder } = require('./reminders/createReminder');
 var { User } = require('./models/models');
 
 app.use(bodyParser.json());
@@ -28,8 +28,16 @@ app.post('/interactive', function(req, res) {
         return;
     }
     message = "Reminder added.";
+    console.log('Creating reminder');
+    return createReminder(user.Pending.Subject,user.Pending.Date,user.Name);
+  })
+  .then(function(){
     google.checkTokens(user);
+<<<<<<< HEAD
     return google.createCalendarEvent(user.Google.tokens, user.Pending)
+=======
+    return google.createCalendarEvent(user.Google.tokens, user.Pending.Subject, user.Pending.Date);
+>>>>>>> caf21d00a5cb74d62412d743f014671aa69e8841
   })
   .then(function(){
     user.Pending = null;
