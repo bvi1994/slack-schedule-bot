@@ -1,0 +1,1 @@
+node ../reminders/herokuRemindScript.js
