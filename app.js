@@ -19,7 +19,7 @@ app.post('/interactive', function(req, res) {
   .then(function(u){
       user = u;
     if(saveEvent && !user.Google.isSetupComplete){
-        message = `Hey. I'm a scheduler bot. I need permission to access your calendar application. Please give me permission to hack to your Google Calender. http://localhost:3000/setup?Name=${user.Name}`;
+        message = `Hey. I'm a scheduler bot. I need permission to access your calendar application. Please give me permission to hack to your Google Calender. ${process.env.DOMAIN}/setup?Name=${user.Name}`;
         res.send(message);
         throw ("need permissions");
     }
@@ -84,4 +84,4 @@ app.get('/google/callback', function(req, res){
     });
 });
 
-app.listen(3000);
+app.listen(process.env.PORT || 3000);
