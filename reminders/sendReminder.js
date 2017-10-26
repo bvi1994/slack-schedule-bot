@@ -8,15 +8,21 @@ function sendReminder(reminder){
   todaysDate.setHours(0,0,0,0);
   var today = reminder.Date.getTime() === todaysDate.getTime();
   var message;
+  var remove = true;
   if(reminder.Channel === 'test'){
     message = `Reminding ${reminder.Channel} to ${reminder.Subject} ${today ? 'today' : 'tomorrow'}`;
   }
   else{
     message = `Reminder to ${reminder.Subject} ${today ? 'today' : 'tomorrow'}`;
-    web.chat.postMessage(reminder.Channel, message);
+    try{
+      web.chat.postMessage(reminder.Channel, message);
+    }
+    catch(error){
+      remove = false;
+    }
   }
   console.log(message);
-  if(today){
+  if(today && remove){
     console.log(`Reminder ${reminder._id} removed from database.`);
     return reminder.remove();
   }
