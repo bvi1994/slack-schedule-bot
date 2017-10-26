@@ -91,7 +91,7 @@ rtm.on(RTM_EVENTS.MESSAGE, function handleRtmMessage(message) {
   if(!message.user){
     return;
   }
-  User.findOrCreate(message.user)
+  User.findOrCreate(message.user,message.channel)
   .then(function(user){
       if (user.Pending){
           postInteractiveMessage(message, user.Pending, true);

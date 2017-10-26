@@ -6,15 +6,6 @@ var scope = [
   'https://www.googleapis.com/auth/calendar'
 ];
 
-function getAuthClient() {
-  return new OAuth2(
-    process.env.GOOGLE_CLIENT_ID,
-    process.env.GOOGLE_CLIENT_SECRET,
-    //'http://localhost:3000/google/callback'
-    process.env.DOMAIN + '/google/callback'
-  );
-}
-
 module.exports = {
-  
+
 }
