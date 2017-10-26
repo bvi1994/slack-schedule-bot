@@ -64,7 +64,6 @@ module.exports = {
   createCalendarEvent(tokens, pendingObj) {
     var client = getAuthClient();
     client.setCredentials(tokens);
-    var intent = pendingObj.Invitees ? 'meeting' : 'reminder';
     var newTime = pendingObj.Time.split(':');
     var timeNum = parseInt(newTime[0]) + 1;
     newTime[0] = timeNum >= 10 ? timeNum.toString() : `0${timeNum.toString()}`;
@@ -76,9 +75,9 @@ module.exports = {
        start: { dateTime: `${pendingObj['Date']}T${pendingObj.Time}`, 'timeZone': 'America/Los_Angeles' },
        end: { dateTime: `${pendingObj['Date']}T${newTime}`, 'timeZone': 'America/Los_Angeles' }
       }
-    : {summary: title,
-       start: { date, 'timeZone': 'America/Los_Angeles' },
-        end: { date, 'timeZone': 'America/Los_Angeles' }
+    : {summary: pendingObj.Subject,
+       start: { date: pendingObj['Date'], 'timeZone': 'America/Los_Angeles' },
+        end: { date: pendingObj['Date'], 'timeZone': 'America/Los_Angeles' }
       }
     return new Promise(function(resolve, reject) {
       calendar.events.insert({
