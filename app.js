@@ -32,12 +32,23 @@ app.post('/interactive', function(req, res) {
 
     message = `${intent} added.`;
     console.log(`Creating ${intent}`);
-    return createReminder(user.Pending.Subject,user.Pending.Date,user.Channel);
+    if(intent === 'Reminder'){
+      return createReminder(user.Pending.Subject,user.Pending.Date,user.Channel);
+    }
+    return;
   })
   .then(function(){
     if(!saveEvent){ return; }
-    google.checkTokens(user);
-    return google.createCalendarEvent(user.Google.tokens, user.Pending)
+    if(intent === 'Reminder'){
+      return google.checkTokens(user)
+      .then(function(){
+        google.createCalendarEvent(user.Google.tokens, user.Pending);
+      })
+      .catch(function(err){
+        console.log();
+      })
+    }
+    return planMeeting(user);
   })
   .then(function(){
     user.Pending = null;

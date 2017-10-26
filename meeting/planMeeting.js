@@ -2,24 +2,27 @@ var { findInvitees } = require "./findInvitees";
 var { checkConflicts } = require "./checkConflicts";
 var { scheduleMeeting } = require "./scheduleMeeting";
 
-function planMeeting(planner,slackIds){
+function planMeeting(planner){
+  var slackIds = planner.Pending.Invitees;
+  var invitees;
+  var noConflicts;
   slackIds.forEach((userId)=>(trimId(slackId)));
-  var invitees = findInvitees(slackIds);
-  invitees.push(planner);
-  var conflicts = invitees.map((invitee)=>(checkConflicts(invitee)));
-  Promise.all(invitees.map((invitee,index)=>{
-    if(conflicts[index]){
-      return scheduleMeeting(invitee,planner.Pending);
-    }
-    return new Promise(function(resolve, reject){
-      resolve();
-    });
-  }))
-  .then(function(){
-    console.log("Meeting scheduled");
+  return findInvitees(slackIds)
+  .then(function(resp){
+    invitees = resp;
+    invitees.push(planner);
+    noConflicts = invitees.map((invitee)=>(checkConflicts(invitee)));
+    return Promise.all(invitees.map((invitee,index)=>{
+      if(noConflicts[index]){
+        return scheduleMeeting(invitee,planner.Pending);
+      }
+      return new Promise(function(resolve, reject){
+        resolve();
+      });
+    }));
   })
   .catch(function(err){
-    console.log("Error:",err);
+    console.log("Error scheduling meeting:", err);
   });
 };
 
