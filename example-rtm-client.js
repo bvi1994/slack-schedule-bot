@@ -94,10 +94,10 @@ rtm.on(RTM_EVENTS.MESSAGE, function handleRtmMessage(message) {
   User.findOrCreate(message.user,message.channel)
   .then(function(user){
       if (user.Pending){
-          postInteractiveMessage(message, user.Pending, true);
-          return;
+        return postInteractiveMessage(message, user.Pending, true);
       }
       handleDialogflowConvo(message);
+      return;
   })
   .catch(function(err){
       console.log('Error:',err);
