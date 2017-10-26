@@ -1,4 +1,4 @@
-function scheduleMeeting(invitee){ //Receives pending.invitees
+function scheduleMeeting(invitee, pending){ //Receives pending.invitees
 
 
 
