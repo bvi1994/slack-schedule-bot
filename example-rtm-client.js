@@ -17,7 +17,6 @@ function handleDialogflowConvo(message){
   dialogflow.interpretUserMessage(message.text, message.user)
   .then(function(res){
     data = res.data;
-    // if data.result.metadata.intentName === 'reminder.add';
     if(data.result.actionIncomplete){
       web.chat.postMessage(message.channel, data.result.fulfillment.speech);
     }
@@ -33,7 +32,7 @@ function handleDialogflowConvo(message){
   })
   .then(function(user){
     if(user){
-      postInteractiveMessage(message, user.Pending.Subject, user.Pending.Date);
+      postInteractiveMessage(message, user.Pending, data.result.metadata.intentName);
     }
   })
   .catch(function(err){
@@ -42,9 +41,9 @@ function handleDialogflowConvo(message){
 };
 
 
-function postInteractiveMessage(message, desc, date, pendingErr){
+function postInteractiveMessage(message, pending, intent, pendingErr){
   var text = pendingErr ? 'If you want to make a new reminder, please cancel pending reminder\n' : '';
-  text += `Confirm reminder to ${desc} on ${date}`;
+  text += makeSentence(pending);
 
   web.chat.postMessage(message.channel, text, { "attachments":[
       {
@@ -54,13 +53,13 @@ function postInteractiveMessage(message, desc, date, pendingErr){
           "attachment_type": "default",
           "actions": [
               {
-                  "name": "yes",
+                  "name": intent,
                   "text": "Yes",
                   "type": "button",
                   "value": "yes"
               },
               {
-                  "name": "no",
+                  "name": intent,
                   "text": "No",
                   "type": "button",
                   "value": "no"
@@ -70,6 +69,23 @@ function postInteractiveMessage(message, desc, date, pendingErr){
     ]}
   );
 };
+
+function makeSentence(pending){
+    if (!pending.Invitees){
+        return `Confirm reminder to ${pending.Subject}} on ${pending['Date']}`
+    } else {
+        //read the invitees as names
+        var invitees = pending.Invitees.length === 1 ? `${pending.Invitees[0]}>` :
+        pending.Invitees.length === 2 ? `${pending.Invitees[0]}> and ${pending.Invitees[1]}>` :
+        pending.Invitees.map((person, id) => (id !== invitees.length - 1 ? `${person}>, ` : `and ${person}>`)).join('');
+
+        var locationString = pending.Location ? ` at ${pending.Location}` : ``;
+        var durationString = pending.Duration ? `lasting ${pending.Duration} ` : ``;
+        var subjectString = pending.Subject ? `about ${pending.Subject} ` : ``;
+
+        return `Confirm meeting ${subjectString}${durationString}with ${invitees} on ${pending['Date']} at ${pending.Time}${locationString}`
+    }
+}
 
 rtm.on(RTM_EVENTS.MESSAGE, function handleRtmMessage(message) {
   if(!message.user){
