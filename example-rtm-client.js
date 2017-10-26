@@ -17,7 +17,7 @@ function handleDialogflowConvo(message){
   dialogflow.interpretUserMessage(message.text, message.user)
   .then(function(res){
     data = res.data;
-    if(data.result.actionIncomplete){
+    if(data.result.actionIncomplete || data.result.metadata.intentName === "Default Fallback Intent"){
       web.chat.postMessage(message.channel, data.result.fulfillment.speech);
     }
     else{
