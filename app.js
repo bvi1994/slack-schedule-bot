@@ -13,6 +13,7 @@ var google = require('./google');
 app.post('/interactive', function(req, res) {
   var resp = JSON.parse(req.body.payload);
   var saveEvent = resp.actions[0].value === 'yes';
+  var intent = resp.actions[0].name === 'reminder.add' ? 'Reminder' : 'Meeting';
   var message;
   var user;
   User.findOne({Name: resp.user.id})
@@ -24,11 +25,11 @@ app.post('/interactive', function(req, res) {
         throw ("need permissions");
     }
     if (!saveEvent){
-        message = "Reminder not added"
+        message = `${intent} not added.`
         return;
     }
-    message = "Reminder added.";
-    console.log('Creating reminder');
+    message = `${intent} added.`;
+    console.log(`Creating ${intent}`);
     return createReminder(user.Pending.Subject,user.Pending.Date,user.Name);
   })
   .then(function(){
@@ -40,8 +41,6 @@ app.post('/interactive', function(req, res) {
     return user.save();
   })
   .then(function(){
-      console.log('User saved.');
-      console.log('Message');
       res.send(message);
   })
   .catch(function(err){
@@ -77,7 +76,7 @@ app.get('/google/callback', function(req, res){
       return user.save();
     })
     .then(function(){
-      res.send('Google authentication successful. Created reminder.');
+      res.send('Google authentication successful. Created event.');
     })
     .catch(function(err){
       console.log('Error:',err);
