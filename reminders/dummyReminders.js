@@ -8,7 +8,7 @@ tomorrow.setDate(today.getDate()+1);
 distantFuture.setDate(tomorrow.getDate()+5);
 data = [
   {
-      Subject: 'Eat',
+      Subject: 'eat',
       Date: today,
       Name: 'U7PHN17L6'
   },
