@@ -64,10 +64,14 @@ module.exports = {
   createCalendarEvent(tokens, pendingObj) {
     var client = getAuthClient();
     client.setCredentials(tokens);
-    var newTime = pendingObj.Time.split(':');
-    var timeNum = parseInt(newTime[0]) + 1;
-    newTime[0] = timeNum >= 10 ? timeNum.toString() : `0${timeNum.toString()}`;
-    newTime = newTime.join(':');
+    var newTime;
+    var timeNum;
+    if (pendingObj.Invitees){
+        newTime = pendingObj.Time ? pendingObj.Time.split(':') : null;
+        timeNum = parseInt(newTime[0]) + 1;
+        newTime[0] = timeNum >= 10 ? timeNum.toString() : `0${timeNum.toString()}`;
+        newTime = newTime.join(':');
+    }
     var resourceObj = pendingObj.Invitees ?
       {summary: 'meeting',
        description: `with ${pendingObj.Invitees.map((invitee) => invitee).join()}`,
