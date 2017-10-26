@@ -72,7 +72,7 @@ function postInteractiveMessage(message, pending, intent, pendingErr){
 
 function makeSentence(pending){
     if (!pending.Invitees){
-        return `Confirm reminder to ${pending.Subject}} on ${pending['Date']}`
+        return `Confirm reminder to ${pending.Subject}} on ${pending['Date']`
     } else {
         //read the invitees as names
         var invitees = pending.Invitees.length === 1 ? `${pending.Invitees[0]}>` :
