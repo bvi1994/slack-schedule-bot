@@ -29,7 +29,7 @@ app.post('/interactive', function(req, res) {
     }
     message = "Reminder added.";
     google.checkTokens(user);
-    return google.createCalendarEvent(user.Google.tokens, user.Pending.Subject, user.Pending.Date)
+    return google.createCalendarEvent(user.Google.tokens, user.Pending)
   })
   .then(function(){
     user.Pending = null;
@@ -66,7 +66,7 @@ app.get('/google/callback', function(req, res){
       return user.save();
     })
     .then(function(){
-        return google.createCalendarEvent(user.Google.tokens, user.Pending.Subject, user.Pending.Date)
+        return google.createCalendarEvent(user.Google.tokens, user.Pending)
     })
     .then(function(){
       user.Pending = null;

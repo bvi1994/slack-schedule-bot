@@ -61,24 +61,30 @@ module.exports = {
   },
 
 
-  createCalendarEvent(tokens, title, date) {
+  createCalendarEvent(tokens, pendingObj) {
     var client = getAuthClient();
     client.setCredentials(tokens);
+    var intent = pendingObj.Invitees ? 'meeting' : 'reminder';
+    var newTime = pendingObj.Time.split(':');
+    var timeNum = parseInt(newTime[0]) + 1;
+    newTime[0] = timeNum >= 10 ? timeNum.toString() : `0${timeNum.toString()}`;
+    newTime = newTime.join(':');
+    var resourceObj = pendingObj.Invitees ?
+      {summary: 'meeting',
+       description: `with ${pendingObj.Invitees.map((invitee) => invitee).join()}`,
+       location: pendingObj.Location || null,
+       start: { dateTime: `${pendingObj['Date']}T${pendingObj.Time}`, 'timeZone': 'America/Los_Angeles' },
+       end: { dateTime: `${pendingObj['Date']}T${newTime}`, 'timeZone': 'America/Los_Angeles' }
+      }
+    : {summary: title,
+       start: { date, 'timeZone': 'America/Los_Angeles' },
+        end: { date, 'timeZone': 'America/Los_Angeles' }
+      }
     return new Promise(function(resolve, reject) {
       calendar.events.insert({
         auth: client,
         calendarId: 'primary',
-        resource: {
-          summary: title,
-          start: {
-            date,
-            'timeZone': 'America/Los_Angeles',
-          },
-          end: {
-            date,
-            'timeZone': 'America/Los_Angeles'
-          }
-        }
+        resource: resourceObj
       }, function(err, res) {
         if (err)  {
           reject(err);
