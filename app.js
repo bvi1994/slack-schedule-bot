@@ -30,7 +30,7 @@ app.post('/interactive', function(req, res) {
     }
     message = `${intent} added.`;
     console.log(`Creating ${intent}`);
-    return createReminder(user.Pending.Subject,user.Pending.Date,user.Name);
+    return createReminder(user.Pending.Subject,user.Pending.Date,user.Channel);
   })
   .then(function(){
     if(!saveEvent){ return; }
@@ -70,7 +70,10 @@ app.get('/google/callback', function(req, res){
       return user.save();
     })
     .then(function(){
-        return google.createCalendarEvent(user.Google.tokens, user.Pending)
+      return createReminder(user.Pending.Subject,user.Pending.Date,user.Channel);
+    })
+    .then(function(){
+      return google.createCalendarEvent(user.Google.tokens, user.Pending);
     })
     .then(function(){
       user.Pending = null;
