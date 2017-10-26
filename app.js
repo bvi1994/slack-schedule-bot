@@ -28,6 +28,8 @@ app.post('/interactive', function(req, res) {
         message = `${intent} not added.`
         return;
     }
+    // check conflicts here
+
     message = `${intent} added.`;
     console.log(`Creating ${intent}`);
     return createReminder(user.Pending.Subject,user.Pending.Date,user.Channel);
