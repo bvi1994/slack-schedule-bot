@@ -33,6 +33,7 @@ app.post('/interactive', function(req, res) {
     return createReminder(user.Pending.Subject,user.Pending.Date,user.Name);
   })
   .then(function(){
+    if(!saveEvent){ return; }
     google.checkTokens(user);
     return google.createCalendarEvent(user.Google.tokens, user.Pending)
   })
