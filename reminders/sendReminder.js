@@ -16,12 +16,11 @@ function sendReminder(reminder){
     message = `Reminder to ${reminder.Subject} ${today ? 'today' : 'tomorrow'}`;
     try{
       web.chat.postMessage(reminder.Channel, message);
-    }
-    catch(error){
+      console.log(message);
+    } catch(error){
       remove = false;
     }
   }
-  console.log(message);
   if(today && remove){
     console.log(`Reminder ${reminder._id} removed from database.`);
     return reminder.remove();
