@@ -94,7 +94,7 @@ rtm.on(RTM_EVENTS.MESSAGE, function handleRtmMessage(message) {
   User.findOrCreate(message.user)
   .then(function(user){
       if (user.Pending){
-          postInteractiveMessage(message, user.Pending.Subject, user.Pending.Date, true);
+          postInteractiveMessage(message, user.Pending, true);
           return;
       }
       handleDialogflowConvo(message);
