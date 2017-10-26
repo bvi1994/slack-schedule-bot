@@ -1,1 +1,2 @@
-node ../reminders/herokuRemindScript.js
+#!/usr/bin/env bash
+node ./reminders/herokuRemindScript.js
