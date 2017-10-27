@@ -1,6 +1,6 @@
-var { findInvitees } = require "./findInvitees";
-var { checkConflicts } = require "./checkConflicts";
-var { scheduleMeeting } = require "./scheduleMeeting";
+var { findInvitees } = require('./findInvitees');
+var { checkConflicts } = require("./checkConflicts");
+var { scheduleMeeting } = require("./scheduleMeeting");
 
 function planMeeting(planner){
   var slackIds = planner.Pending.Invitees;
