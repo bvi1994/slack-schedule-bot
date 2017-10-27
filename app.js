@@ -36,7 +36,7 @@ app.post('/interactive', function(req, res) {
   })
   .then(function(){
     if(!saveEvent){ return; }
-    google.checkTokens(user);
+    // google.checkTokens(user);
     return google.createCalendarEvent(user.Google.tokens, user.Pending)
   })
   .then(function(){
