@@ -42,7 +42,7 @@ function checkConflict(user, pending){
   }
 
   var calendar = google.calendar('v3');
-  calendar.freebusy.query(check, function(error, schedule){
+  return calendar.freebusy.query(check, function(error, schedule){
     if(error){
       console.log('Error: ', error);
       return error
