@@ -4,12 +4,11 @@ var { scheduleMeeting } = require("./scheduleMeeting");
 
 function planMeeting(planner){
   var slackIds = planner.Pending.Invitees;
-  var invitees;
   var noConflicts;
-  slackIds.forEach((slackId)=>(trimId(slackId)));
+  slackIds = slackIds.map((slackId)=>(trimId(slackId)));
   return findInvitees(slackIds)
-  .then(function(resp){
-    invitees = resp;
+  .then(function(invitees){
+    console.log(invitees);
     invitees.push(planner);
     noConflicts = invitees.map((invitee)=>(checkConflict(invitee)));
     return Promise.all(invitees.map((invitee,index)=>{
