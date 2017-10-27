@@ -89,7 +89,7 @@ function makeSentence(pending){
         pending.Invitees.map((person, id) => (id !== invitees.length - 1 ? `${person}>, ` : `and ${person}>`)).join('');
 
         var locationString = pending.Location ? ` at ${pending.Location}` : ``;
-        var durationString = pending.Duration ? `lasting ${pending.Duration} ` : ``;
+        var durationString = pending.Duration ? `lasting ${pending.Duration.amount} ${pending.Duration.unit}s ` : ``;
         var subjectString = pending.Subject ? `about ${pending.Subject} ` : ``;
 
         return `Confirm meeting ${subjectString}${durationString}with ${invitees} on ${pending['Date']} at ${pending.Time}${locationString}`
