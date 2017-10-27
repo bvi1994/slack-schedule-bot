@@ -1,7 +1,7 @@
 var { User } = require('../models/models');
 function findInvitees(slackIds){
     return Promise.all(slackIds.map(id => User.findOne({Name: id})))
-    .then(values => return values)
+    .then(values => values)
     .catch(error => console.log('error: ', error));
 }
 
