@@ -10,32 +10,32 @@ data = [
   {
       Subject: 'eat',
       Date: today,
-      Name: 'U7PHN17L6'
+      UserId: 'U7PHN17L6'
   },
   {
       Subject: 'Sleep',
       Date: today,
-      Name: 'test'
+      UserId: 'test'
   },
   {
       Subject: 'Watch TV',
       Date: tomorrow,
-      Name: 'test'
+      UserId: 'test'
   },
   {
       Subject: 'Shop',
       Date: tomorrow,
-      Name: 'test'
+      UserId: 'test'
   },
   {
       Subject: 'Relax',
       Date: distantFuture,
-      Name: 'test'
+      UserId: 'test'
   },
   {
       Subject: 'Study',
       Date: distantFuture,
-      Name: 'test'
+      UserId: 'test'
   }
 ];
 

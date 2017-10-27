@@ -17,7 +17,7 @@ const PORT = process.env.PORT || 3000;
 // Lets start our server
 app.listen(PORT, function () {
     //Callback triggered when server is successfully listening. Hurray!
-    console.log("Example app listening on port " + PORT);
+    // console.log("Example app listening on port " + PORT);
 });
 
 
@@ -32,7 +32,7 @@ app.get('/oauth', function(req, res) {
     if (!req.query.code) {
         res.status(500);
         res.send({"Error": "Looks like we're not getting code."});
-        console.log("Looks like we're not getting code.");
+        // console.log("Looks like we're not getting code.");
     } else {
         // If it's there...
 

@@ -1,10 +1,11 @@
 var { Reminder } = require('../models/models');
+var { findChannel } = require('./findChannel');
 var { WebClient } = require('@slack/client');
 var token = process.env.SLACK_API_TOKEN || '';
 var web = new WebClient(token);
 
 function sendReminder(reminder){
-  if(reminder.Channel === 'test'){
+  if(reminder.UserId === 'test'){
     return sendTestReminder(reminder);
   }
   return sendRealReminder(reminder);
@@ -13,7 +14,7 @@ function sendReminder(reminder){
 function sendTestReminder(reminder){
   var todaysDate = new Date();
   todaysDate.setHours(0,0,0,0);
-  var message = `Reminding ${reminder.Channel} to ${reminder.Subject} ${today ? 'today' : 'tomorrow'}`;
+  var message = `Reminding ${reminder.UserId} to ${reminder.Subject} ${today ? 'today' : 'tomorrow'}`;
   var today = reminder.Date.getTime() === todaysDate.getTime();
   if(today){
     console.log(`Reminder ${reminder._id} removed from database.`);
@@ -29,7 +30,10 @@ function sendRealReminder(reminder){
   todaysDate.setHours(0,0,0,0);
   var today = reminder.Date.getTime() === todaysDate.getTime();
   var message = `Reminder to ${reminder.Subject} ${today ? 'today' : 'tomorrow'}`;
-  web.chat.postMessage(reminder.Channel, message)
+  findChannel(reminder.UserId)
+  .then(function(channel){
+    return web.chat.postMessage(channel, message);
+  })
   .then(function(){
     console.log(message);
     if(today){

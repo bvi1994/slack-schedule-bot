@@ -48,13 +48,13 @@ module.exports = {
           console.log(err)
           return err + ' Unable to update token'
         }
-        console.log("Updating user's token");
+        // console.log("Updating user's token");
         user.Google.tokens = tokens;
         return user.save();
       })
     }
 
-    console.log("Look here: " + user.Google.tokens.expiry_date);
+    // console.log("Look here: " + user.Google.tokens.expiry_date);
     return new Promise(function(resolve, reject){
       resolve(user);
     });

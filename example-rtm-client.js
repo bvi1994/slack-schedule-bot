@@ -42,7 +42,7 @@ function handleDialogflowConvo(message){
   }
   })
   .then(function(){
-      console.log('got through async post')
+      // console.log('got through async post')
   })
   .catch(function(err){
     console.log('Error:',err);
