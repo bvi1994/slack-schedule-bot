@@ -9,7 +9,10 @@ function planMeeting(planner){
   return findInvitees(slackIds)
   .then(function(invitees){
     invitees.push(planner);
-    noConflicts = invitees.map((invitee)=>(checkConflict(invitee, planner.Pending)));
+    return Promise.all(invitees.map((invitee)=>(checkConflict(invitee, planner.Pending))));
+  })
+  .then(function(resp){
+    noConflicts = resp;
     return Promise.all(invitees.map((invitee,index)=>{
       if(noConflicts[index]){
         return scheduleMeeting(invitee,planner.Pending);

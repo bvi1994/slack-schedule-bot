@@ -15,7 +15,7 @@ function checkConflict(user, pending){
   // var newTime = pending.Time ? pending.Time.split(':') : null;
   var client = getAuthClient();
   var tokens = user.Google.tokens;
-  client.setCredentials(tokens)
+  client.setCredentials(tokens);
   var startDate = pending.Time ? pending.Time.split(':') : null;
   var startTime = new Date(pending.Date + 'T' + startDate.join(':'));
   // console.log(pending.Duration);
@@ -24,8 +24,6 @@ function checkConflict(user, pending){
   endTime.setTime(endTime.getTime() + duration);
   // console.log(startTime);
   // console.log(endTime);
-
-
   var check = {
     'auth': client,
     'resource': {
