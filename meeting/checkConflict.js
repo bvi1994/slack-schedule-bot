@@ -17,9 +17,9 @@ function checkConflict(user, pending){
   var tokens = user.Google.tokens;
   client.setCredentials(tokens)
   var startDate = pending.Time ? pending.Time.split(':') : null;
-  var startTime = new Date(pending.Date + 'T' + startDate.join(':'));
+  var startTime = new Date(pending['Date'] + 'T' + startDate.join(':'));
   // console.log(pending.Duration);
-  var endTime = new Date(pending.Date + 'T' + startDate.join(':'));
+  var endTime = new Date(pending['Date'] + 'T' + startDate.join(':'));
   var duration = 3600000 // TO_DO: Calculate millseconds for arbitary duration. See Google.js
   endTime.setTime(endTime.getTime() + duration);
   // console.log(startTime);
