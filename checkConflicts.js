@@ -54,10 +54,7 @@ async function checkConflict(user, pending){
       return true
     }
   })
-
 }
-
-
 
 module.exports = {
   checkConflict

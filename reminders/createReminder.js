@@ -1,11 +1,14 @@
 var { Reminder } = require('../models/models');
 
-function createReminder(subject,date,channel){
+function createReminder(user){
+  var subject = user.Pending.Subject;
+  var date = user.Pending.Date;
+  var userId = user.Name;
   var newDate = new Date(date);
   return new Reminder({
     Subject: subject,
     Date: newDate,
-    Channel: channel
+    UserId: userId
   }).save();
 };
 
