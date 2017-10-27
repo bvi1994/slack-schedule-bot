@@ -1,5 +1,5 @@
 var { findInvitees } = require('./findInvitees');
-var { checkConflict } = require("./checkConflicts");
+var { checkConflict } = require("./checkConflict");
 var { scheduleMeeting } = require("./scheduleMeeting");
 
 function planMeeting(planner){
@@ -11,7 +11,7 @@ function planMeeting(planner){
   .then(function(resp){
     invitees = resp;
     invitees.push(planner);
-    noConflicts = invitees.map((invitee)=>(checkConflicts(invitee)));
+    noConflicts = invitees.map((invitee)=>(checkConflict(invitee)));
     return Promise.all(invitees.map((invitee,index)=>{
       if(noConflicts[index]){
         return scheduleMeeting(invitee,planner.Pending);
