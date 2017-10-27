@@ -24,7 +24,7 @@ function clearReminders(searchQuery){
 }
 
 var testQuery = {
-  Name: 'test'
+  UserId: 'test'
 };
 
 // Code to test reminder logic locally with dummy data on Mlab

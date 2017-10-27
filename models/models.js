@@ -1,6 +1,9 @@
 var mongoose = require('mongoose');
 mongoose.connect(process.env.MONGODB_URI);
 mongoose.Promise = global.Promise;
+var { WebClient } = require('@slack/client');
+var token = process.env.SLACK_API_TOKEN || '';
+var web = new WebClient(token);
 
 var UserSchema = new mongoose.Schema({
     Google:  {
@@ -17,21 +20,17 @@ var UserSchema = new mongoose.Schema({
     Name: {
       type: String,
       required: true
-    },
-    Channel: {
-      type: String,
-      required: true
     }
 });
 
-UserSchema.statics.findOrCreate = function(Name, Channel) {
+UserSchema.statics.findOrCreate = function(Name) {
   return User.findOne({ Name })
     .then(function(user) {
       if(user) {
         return user;
       }
       else {
-        return new User({ Name, Channel }).save();
+        return new User({ Name }).save();
       }
     })
     .catch(function(err){
@@ -50,7 +49,7 @@ var ReminderSchema = new mongoose.Schema({
         type: Date,
         required: true
     },
-    Channel: {
+    UserId: {
       type: String,
       required: true
     }

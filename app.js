@@ -3,6 +3,12 @@ var app = express();
 var bodyParser = require('body-parser');
 var { createReminder } = require('./reminders/createReminder');
 var { User } = require('./models/models');
+var { askForCalendarAccess, cancelIntent, handleReminderIntent, handleMeetingIntent } = require('./App/intents');
+var axios = require('axios');
+var { WebClient } = require('@slack/client');
+var token = process.env.SLACK_API_TOKEN || '';
+var web = new WebClient(token);
+var { findChannel } = require('./reminders/findChannel');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -11,40 +17,54 @@ require('./example-rtm-client');
 var google = require('./google');
 
 app.post('/interactive', function(req, res) {
-  var resp = JSON.parse(req.body.payload);
-  var saveEvent = resp.actions[0].value === 'yes';
-  var intent = resp.actions[0].name === 'reminder.add' ? 'Reminder' : 'Meeting';
+  var isGoogleRequest = false;
+  if(req.body.payload){
+    var resp = JSON.parse(req.body.payload);
+    var saveEvent = resp.actions[0].value === 'yes';
+    var intent = resp.actions[0].name === 'reminder.add' ? 'Reminder' : 'Meeting';
+    var name = resp.user.id
+  }
+  else{
+    isGoogleRequest = true;
+    var saveEvent = true;
+    var name = req.body.name;
+    var intent = req.body.intent === 'reminder.add' ? 'Reminder' : 'Meeting';
+  }
   var message;
   var user;
-  User.findOne({Name: resp.user.id})
+  User.findOne({Name: name})
   .then(function(u){
-      user = u;
-    if(saveEvent && !user.Google.isSetupComplete){
-        message = `Hey. I'm a scheduler bot. I need permission to access your calendar application. Please give me permission to hack to your Google Calender. ${process.env.DOMAIN}/setup?Name=${user.Name}`;
-        res.send(message);
-        throw ("need permissions");
-    }
+    user = u;
     if (!saveEvent){
-        message = `${intent} not added.`
-        return;
+      return cancelIntent(user, intent);
     }
-    // check conflicts here
-
-    message = `${intent} added.`;
-    console.log(`Creating ${intent}`);
-    return createReminder(user.Pending.Subject,user.Pending.Date,user.Channel);
+    if (!user.Google.isSetupComplete){
+      return askForCalendarAccess(user);
+    }
+    if (intent === 'Reminder') {
+      return handleReminderIntent(user);
+    }
+    return Promise.resolve('Not dealing with meetings yet.');
+    // return handleMeetingIntent(user);
   })
-  .then(function(){
-    if(!saveEvent){ return; }
-    // google.checkTokens(user);
-    return google.createCalendarEvent(user.Google.tokens, user.Pending)
+  .then(function(m){
+    if(m.match('Please give me permission')){
+      res.send(m);
+      return Promise.resolve(false);
+    }
+    message = m;
+    return findChannel(user.Name);
   })
-  .then(function(){
-    user.Pending = null;
-    return user.save();
-  })
-  .then(function(){
+  .then(function(channel){
+    if(channel && isGoogleRequest){
+      return web.chat.postMessage(channel, message);
+    }
+    else{
       res.send(message);
+    }
+  })
+  .then(function(){
+    res.end();
   })
   .catch(function(err){
     res.send('Error:' + err);
@@ -68,21 +88,17 @@ app.get('/google/callback', function(req, res){
       tokens = t;
       user.Google.tokens = Object.assign({}, tokens);
       user.Google.isSetupComplete = true;
-      console.log(user.Google);
+      // console.log(user.Google);
       return user.save();
     })
     .then(function(){
-      return createReminder(user.Pending.Subject,user.Pending.Date,user.Channel);
+      return axios.post(`${process.env.DOMAIN}/interactive`, {
+          name: user.Name,
+          intent: 'reminder.add'
+      });
     })
     .then(function(){
-      return google.createCalendarEvent(user.Google.tokens, user.Pending);
-    })
-    .then(function(){
-      user.Pending = null;
-      return user.save();
-    })
-    .then(function(){
-      res.send('Google authentication successful. Created event.');
+      res.send('Google authentication successful and event created.');
     })
     .catch(function(err){
       console.log('Error:',err);
