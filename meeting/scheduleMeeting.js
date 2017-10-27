@@ -7,7 +7,7 @@ function scheduleMeeting(invitee, pending) {
     return google.createCalendarEvent(invitee.Google.tokens, pending);
   })
   .then(function(){
-    return createReminder(invitee.Pending.Subject,invitee.Pending.Date,invitee.Name)
+    return createReminder(invitee)
   })
   .catch(function(err){
     console.log(`Error scheduling meeting for ${invitee.Name}:`, err);

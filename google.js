@@ -74,7 +74,7 @@ module.exports = {
     console.log('end time: ', endTime);
     console.log('end date: ', endDate);
     var resourceObj = pendingObj.Invitees ?
-      {summary: `meeting}`,
+      {summary: `meeting`,
        description: pendingObj.Subject ? `re: ${pendingObj.Subject}` : null,
        location: pendingObj.Location || null,
        start: { dateTime: `${pendingObj['Date']}T${pendingObj.Time}`, 'timeZone': 'America/Los_Angeles' },
