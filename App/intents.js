@@ -1,5 +1,6 @@
 var google = require('../google');
 var { createReminder } = require('../reminders/createReminder');
+var { planMeeting } = require('../meeting/planMeeting');
 
 function askForCalendarAccess(user){
   return new Promise((resolve, reject) => {

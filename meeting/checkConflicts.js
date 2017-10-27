@@ -11,7 +11,7 @@ function getAuthClient() {
 }
 
 
-async function checkConflict(user, pending){
+function checkConflict(user, pending){
   // var newTime = pending.Time ? pending.Time.split(':') : null;
   var client = getAuthClient();
   var tokens = user.Google.tokens;

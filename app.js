@@ -9,7 +9,6 @@ var { WebClient } = require('@slack/client');
 var token = process.env.SLACK_API_TOKEN || '';
 var web = new WebClient(token);
 var { findChannel } = require('./reminders/findChannel');
-var { planMeeting } = require('./meeting/planMeeting');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
