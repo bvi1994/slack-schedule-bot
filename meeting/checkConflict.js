@@ -57,7 +57,7 @@ function checkConflict(user, pending){
 }
 
 
-
+/*
 module.exports = {
   checkConflict
 };
@@ -103,3 +103,8 @@ var testPending = {
 }
 
 checkConflict(testUser, testPending);
+*/
+
+module.exports = {
+  checkConflict
+}
