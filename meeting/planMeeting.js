@@ -1,12 +1,12 @@
 var { findInvitees } = require('./findInvitees');
-var { checkConflicts } = require("./checkConflicts");
+var { checkConflict } = require("./checkConflicts");
 var { scheduleMeeting } = require("./scheduleMeeting");
 
 function planMeeting(planner){
   var slackIds = planner.Pending.Invitees;
   var invitees;
   var noConflicts;
-  slackIds.forEach((userId)=>(trimId(slackId)));
+  slackIds.forEach((slackId)=>(trimId(slackId)));
   return findInvitees(slackIds)
   .then(function(resp){
     invitees = resp;
