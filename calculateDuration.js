@@ -47,6 +47,26 @@ function endDateFn(date){
     return endDate;
 }
 
+function convertDuration(duration){
+  var millseconds = 0;
+  switch(duration.unit) {
+      case 'm':
+          millseconds += duration.amount * 60 * 1000
+          break;
+      case 'h':
+          millseconds += duration.amount * 60 * 60 * 1000
+          break;
+      case 'd':
+          millseconds += duration.amount * 24 * 60 * 60 * 1000
+          break;
+      case 's':
+          millseconds += duration.amount * 1000
+      default:
+          return millseconds
+  }
+  return millseconds;
+}
+
 module.exports = {
-    endTimeFn, endDateFn
+    endTimeFn, endDateFn, convertDuration
 }
