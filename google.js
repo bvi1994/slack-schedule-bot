@@ -1,4 +1,5 @@
 var google = require('googleapis');
+var { endTimeFn, endDateFn } = require('./calculateDuration');
 var calendar = google.calendar('v3');
 var OAuth2 = google.auth.OAuth2;
 var scope = [
@@ -66,49 +67,14 @@ module.exports = {
     client.setCredentials(tokens);
     var endTime;
     var endDate;
-    var changeDate = false;
     if (pendingObj.Invitees){
-        endTime = pendingObj.Time ? pendingObj.Time.split(':') : null;
-        switch(pendingObj.Duration.unit) {
-            case 'm':
-                if ((parseInt(endTime[1]) + pendingObj.Duration.amount) < 60) {
-                      endTime[1] = parseInt(endTime[1]) + pendingObj.Duration.amount
-                }
-                else {
-                    endTime[0] = parseInt(endTime[0]) + 1;
-                    endTime[1] = parseInt(endTime[1]) + pendingObj.Duration.amount - 60
-                }
-                endTime = endTime.join(':');
-                break;
-            case 'h':
-                if ((parseInt(endTime[0]) + pendingObj.Duration.amount) < 24){
-                    endTime[0] = parseInt(endTime[0]) + pendingObj.Duration.amount;
-                } else {
-                    endTime[0] = parseInt(endTime[0]) + pendingObj.Duration.amount - 24;
-                    changeDate = true;
-                }
-                endTime = endTime.join(':');
-                break;
-            default:
-                if (parseInt(endTime[1]) + 30 < 60){
-                    endTime[1] = parseInt(endTime[1]) + 30;
-                } else {
-                    endTime[0] = parseInt(endTime[0]) + 1;
-                    endTime[1] = parseInt(endTime[1]) - 30;
-                }
-                endTime = endTime.join(':');
-        }
-        if (changeDate){
-            endDate = pendingObj['Date'].split('-');
-            endDate[2] = parseInt(endDate[2]) + 1;
-            endDate = endDate.join('-');
-        } else {
-            endDate = pendingObj['Date'];
-        }
-        console.log('got through new stuff')
+        endTime = endTimeFn(pendingObj.Time, pendingObj.Duration);
+        endDate = endDateFn(pendingObj['Date']);
     }
+    console.log('end time: ', endTime);
+    console.log('end date: ', endDate);
     var resourceObj = pendingObj.Invitees ?
-      {summary: `meeting}`,
+      {summary: `meeting`,
        description: pendingObj.Subject ? `re: ${pendingObj.Subject}` : null,
        location: pendingObj.Location || null,
        start: { dateTime: `${pendingObj['Date']}T${pendingObj.Time}`, 'timeZone': 'America/Los_Angeles' },
