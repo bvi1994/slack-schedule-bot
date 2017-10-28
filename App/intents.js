@@ -51,13 +51,23 @@ function handleReminderIntent(user){
 };
 
 function handleMeetingIntent(user){
+  var timeConflicts;
   return planMeeting(user)
-  .then(function(){
-    user.Pending = null;
-    return user.save();
+  .then(function(resp){
+    if(resp[0]===true){
+      user.Pending = null;
+      return user.save();
+    }
+    timeConflicts = resp;
+    return Promise.resolve(false);
   })
   .then(function(){
-    return `Reminder added.`;
+    if(!timeConflicts){
+      return `Meeting added.`;
+    }
+    else{
+      return `Time Conflicts: ${timeConflicts}`;
+    }
   })
   .catch(function(err){
     console.log("Error creating reminder:", err);

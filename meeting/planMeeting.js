@@ -15,14 +15,18 @@ function planMeeting(planner){
   })
   .then(function(resp){
     noConflicts = resp;
-    return Promise.all(invitees.map((invitee,index)=>{
-      if(noConflicts[index]){
+    console.log('No conflicts:',noConflicts);
+    if(noConflicts.indexOf(false)<0){
+      return Promise.all(invitees.map((invitee,index)=>{
         return scheduleMeeting(invitee,planner.Pending);
-      }
-      return new Promise(function(resolve, reject){
-        resolve();
-      });
-    }));
+      }));
+    }
+    console.log('Thinks there is a conflict.');
+    var conflictInvitees = invitees.filter(function(invitee, index){
+      return !noConflicts[index];
+    });
+    console.log('Conflicts found:',conflictInvitees.map((invitee)=>(invitee.Name)));
+    return Promise.resolve(conflictInvitees.map((invitee)=>(invitee.Name)));
   })
   .catch(function(err){
     console.log("Error scheduling meeting:", err);

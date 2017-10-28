@@ -20,22 +20,37 @@ var UserSchema = new mongoose.Schema({
     Name: {
       type: String,
       required: true
+    },
+    RealName: {
+      type: String,
+      required: true
     }
 });
 
 UserSchema.statics.findOrCreate = function(Name) {
+  var user;
   return User.findOne({ Name })
-    .then(function(user) {
-      if(user) {
-        return user;
+    .then(function(u) {
+      if(u) {
+        found = true;
+        user = u;
+        return false;
       }
       else {
-        return new User({ Name }).save();
+        return web.users.info(Name);
+      }
+    })
+    .then(function(userInfo){
+      if(userInfo){
+        return new User({ Name, RealName: userInfo.user.profile.real_name || userInfo.user.profile.display_name }).save();
+      }
+      else{
+        return user;
       }
     })
     .catch(function(err){
-      console.log('Error:',err);
-    })
+      console.log('Error:', err);
+    });
 };
 
 var User =  mongoose.model('User', UserSchema);

@@ -9,7 +9,14 @@ function createReminder(user){
     Subject: subject,
     Date: newDate,
     UserId: userId
-  }).save();
+  }).save()
+  .then(function(){
+    return true;
+  })
+  .catch(function(err){
+    console.log('Error:',err);
+    return false;
+  });
 };
 
 module.exports = {

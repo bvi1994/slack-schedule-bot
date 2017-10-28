@@ -17,13 +17,17 @@ function checkConflict(user, pending){
   var tokens = user.Google.tokens;
   client.setCredentials(tokens);
   var startDate = pending.Time ? pending.Time.split(':') : null;
-  var startTime = new Date(pending.Date + 'T' + startDate.join(':'));
-  // console.log(pending.Duration);
-  var endTime = new Date(pending.Date + 'T' + startDate.join(':'));
-  var duration = 3600000 // TO_DO: Calculate millseconds for arbitary duration. See Google.js
-  endTime.setTime(endTime.getTime() + duration);
+  var endTime = `${pending['Date']}T13:00:00-07:00`;
+  var startTime = `${pending['Date']}T${startDate.join(':')}-07:00`;
+
+  // var startTime = new Date(pending.Date + 'T' + startDate.join(':'));
+  // // console.log(pending.Duration);
+  // var endTime = new Date(pending.Date + 'T' + startDate.join(':'));
+  // var duration = 3600000 // TO_DO: Calculate millseconds for arbitary duration. See Google.js
+  // endTime.setTime(endTime.getTime() + duration);
   // console.log(startTime);
   // console.log(endTime);
+
   var check = {
     'auth': client,
     'resource': {
@@ -40,19 +44,25 @@ function checkConflict(user, pending){
   }
 
   var calendar = google.calendar('v3');
-  return calendar.freebusy.query(check, function(error, schedule){
-    if(error){
-      console.log('Error: ', error);
-      return error
-    } else {
-      console.log('Schedule ', schedule.calendars.primary.busy)
-      if(schedule.calendars.primary.busy.length){
-        console.log("Meeting conflict");
-        return false
+  console.log('Start Time:', startTime);
+  console.log('End Time:', endTime);
+  return new Promise(function(resolve,reject){
+    calendar.freebusy.query(check, function(error, schedule){
+      if(error){
+        console.log('Error: ', error);
+        reject(error);
+      } else {
+        console.log('Schedule ', schedule.calendars.primary.busy)
+        if(schedule.calendars.primary.busy.length){
+          console.log("Meeting conflict");
+          resolve(false);
+        }
+        else{
+          console.log("No Conflict")
+          resolve(true);
+        }
       }
-      console.log("Meeting scheduled")
-      return true
-    }
+    });
   });
 }
 
