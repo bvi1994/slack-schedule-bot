@@ -1,6 +1,6 @@
 var google = require('googleapis');
 var OAuth2 = google.auth.OAuth2;
-var calculateDuration = require('../calculateDuration');
+var { endTimeFn, endDateFn } = require('../calculateDuration');
 
 function getAuthClient() {
   return new OAuth2(
@@ -17,13 +17,15 @@ function checkConflict(user, pending){
   var client = getAuthClient();
   var tokens = user.Google.tokens;
   client.setCredentials(tokens);
-  var startDate = pending.Time ? pending.Time.split(':') : null;
-  var startTime = new Date(pending['Date'] + 'T' + startDate.join(':'));
-  // console.log('Duration', calculateDuration.convertDuration(pending.Duration));
-  var endTime = new Date(pending['Date'] + 'T' + startDate.join(':'));
-  var duration = calculateDuration.convertDuration(pending.Duration) || 3600000;
-  console.log(duration);
-  endTime.setTime(endTime.getTime() + duration);
+  var startTime = `${pending['Date']}T${pending.Time}-07:00`
+  var newEndTime = endTimeFn(pending.Time, pending.Duration);
+  var newEndDate = endDateFn(pending['Date']);
+  var endTime = `${newEndDate}T${newEndTime}-07:00`
+  // var startTime = new Date(pending['Date'] + 'T' + startDate.join(':'));
+  // var endTime = new Date(pending['Date'] + 'T' + startDate.join(':'));
+  // var duration = calculateDuration.convertDuration(pending.Duration) || 3600000;
+  // console.log(duration);
+  // endTime.setTime(endTime.getTime() + duration);
   // console.log(startTime);
   // console.log(endTime);
 
